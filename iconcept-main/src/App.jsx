@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import footerBanner from './assets/footer_banner_new.jpg';
+import AboutUs from './AboutUs';
+import ContactUs from './ContactUs';
 import { 
   ChevronRight, 
   ChevronLeft,
@@ -165,6 +168,7 @@ const SERVICES_DATA = [
 ];
 
 export default function App() {
+  const [currentPage, setCurrentPage] = useState('home');
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [activeServiceIndex, setActiveServiceIndex] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -174,6 +178,17 @@ export default function App() {
   const [formData, setFormData] = useState({ name: '', phone: '', spaceType: 'Residential', message: '' });
 
   const portfolioSliderRef = useRef(null);
+
+  const handleNavigate = (page, sectionId = null) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (sectionId && page === 'home') {
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
+  };
 
   // Auto-sliding 3-Image Cover Timer
   useEffect(() => {
@@ -214,22 +229,30 @@ export default function App() {
   const activeService = SERVICES_DATA[activeServiceIndex];
   const ActiveServiceIcon = activeService.icon;
 
+  if (currentPage === 'about') {
+    return <AboutUs onNavigate={handleNavigate} onOpenModal={() => setIsModalOpen(true)} />;
+  }
+
+  if (currentPage === 'contacts') {
+    return <ContactUs onNavigate={handleNavigate} />;
+  }
+
   return (
     <div className="landing-app">
       {/* Full-Width 16:9 Aspect Ratio Hero Cover Section */}
       <section id="home" className="hero-full-container">
         {/* Header embedded inside Hero section */}
         <header className="hero-navbar">
-          <a href="#">
+          <a href="#home" onClick={(e) => { e.preventDefault(); handleNavigate('home'); }}>
             <img src={IMAGES.logo} alt="iConcept Interiors Logo" className="hero-brand-logo-img" />
           </a>
 
-          <ul className="hero-nav-menu">
-            <li><a href="#home" className="hero-nav-link active">Home</a></li>
-            <li><a href="#about" className="hero-nav-link">About us</a></li>
-            <li><a href="#services" className="hero-nav-link">Our Services</a></li>
-            <li><a href="#portfolio" className="hero-nav-link">Project Gallery</a></li>
-            <li><a href="#contacts" className="hero-nav-link">Contact us</a></li>
+          <ul className={`hero-nav-menu ${mobileMenuOpen ? 'mobile-active' : ''}`}>
+            <li><a href="#home" className={`hero-nav-link ${currentPage === 'home' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); handleNavigate('home'); }}>Home</a></li>
+            <li><a href="#about" className="hero-nav-link" onClick={(e) => { e.preventDefault(); handleNavigate('about'); }}>About us</a></li>
+            <li><a href="#services" className="hero-nav-link" onClick={(e) => { e.preventDefault(); handleNavigate('home', 'services'); }}>Our Services</a></li>
+            <li><a href="#portfolio" className="hero-nav-link" onClick={(e) => { e.preventDefault(); handleNavigate('home', 'portfolio'); }}>Project Gallery</a></li>
+            <li><a href="#contacts" className="hero-nav-link" onClick={(e) => { e.preventDefault(); handleNavigate('contacts'); }}>Contact us</a></li>
           </ul>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -658,34 +681,23 @@ export default function App() {
         </div>
       </section>
 
-      {/* ══ PRE-FOOTER CTA ══ */}
-      <div className="footer-cta-strip">
-        <div className="footer-cta-inner">
-          <div className="footer-cta-text">
-            <p className="footer-cta-label">— YOUR VISION, OUR CRAFT —</p>
-            <h2 className="footer-cta-big">
-              Let's Create Something <span className="footer-cta-gold">Extraordinary</span>
-            </h2>
-            <p className="footer-cta-sub">
-              From concept to completion — bespoke interiors designed around your life.
-            </p>
-          </div>
-          <div className="footer-cta-actions">
-            <button className="footer-cta-primary" onClick={() => setIsModalOpen(true)}>
-              Start Your Project <ArrowRight size={16} />
-            </button>
-            <a href="tel:+919021703030" className="footer-cta-secondary">
-              <Phone size={15} /> Call Us Now
-            </a>
-          </div>
+
+
+      {/* ══ PRE-FOOTER BANNER WITH GRADIENT MASK & CENTERED LOGO OVERLAY ══ */}
+      <div className="footer-banner-section" onClick={() => setIsModalOpen(true)}>
+        <img 
+          src={footerBanner} 
+          alt="iConcept Interiors" 
+          className="footer-banner-img" 
+        />
+        <div className="footer-banner-mask"></div>
+        <div className="footer-banner-center-content">
+          <img src={IMAGES.logo} alt="iConcept Interiors Logo" className="footer-banner-logo" />
         </div>
       </div>
 
       {/* ══ MAIN FOOTER ══ */}
       <footer id="contacts" className="site-footer">
-
-        {/* Background watermark */}
-        <span className="footer-watermark" aria-hidden="true">iConcept</span>
 
         <div className="site-footer__inner">
 
@@ -695,28 +707,19 @@ export default function App() {
               We transform your vision into beautifully crafted spaces — Interior design that inspires, functions beautifully, and reflects your personality.
             </p>
 
-            {/* Contact Info Cards */}
-            <div className="footer-info-cards">
-              <a href="tel:+919021703030" className="footer-info-card">
-                <div className="footer-info-icon"><Phone size={15} /></div>
-                <div>
-                  <span className="footer-info-label">Call Us</span>
-                  <span className="footer-info-value">+91 90217 03030</span>
-                </div>
+            {/* Clean Minimal Contact List (No Bulky Cards) */}
+            <div className="footer-contact-clean-list">
+              <a href="tel:+919021703030" className="footer-contact-clean-item">
+                <Phone size={14} className="footer-contact-clean-icon" />
+                <span>+91 90217 03030</span>
               </a>
-              <a href="mailto:sa@iconceptinteriors.com" className="footer-info-card">
-                <div className="footer-info-icon"><Mail size={15} /></div>
-                <div>
-                  <span className="footer-info-label">Email Us</span>
-                  <span className="footer-info-value">sa@iconceptinteriors.com</span>
-                </div>
+              <a href="mailto:sa@iconceptinteriors.com" className="footer-contact-clean-item">
+                <Mail size={14} className="footer-contact-clean-icon" />
+                <span>sa@iconceptinteriors.com</span>
               </a>
-              <div className="footer-info-card">
-                <div className="footer-info-icon"><MapPin size={15} /></div>
-                <div>
-                  <span className="footer-info-label">Our Studio</span>
-                  <span className="footer-info-value">165, Dronacharya Nagar,<br />Trimurti Nagar, Nagpur – 440022</span>
-                </div>
+              <div className="footer-contact-clean-item">
+                <MapPin size={14} className="footer-contact-clean-icon" />
+                <span>165, Dronacharya Nagar, Trimurti Nagar, Nagpur – 440022</span>
               </div>
             </div>
           </div>
@@ -727,43 +730,51 @@ export default function App() {
             <div className="footer-nav-col">
               <h5 className="footer-col-heading">The Studio</h5>
               <ul className="footer-nav-list">
-                <li><a href="#about"><span className="fn-arrow">→</span> About Us</a></li>
-                <li><a href="#portfolio"><span className="fn-arrow">→</span> Our Projects</a></li>
-                <li><a href="#services"><span className="fn-arrow">→</span> Services</a></li>
-                <li><a href="#services"><span className="fn-arrow">→</span> Our Process</a></li>
-                <li><a href="#services"><span className="fn-arrow">→</span> FAQ</a></li>
+                <li><a href="#about" onClick={(e) => { e.preventDefault(); handleNavigate('about'); }}><span className="fn-arrow">→</span> About Us</a></li>
+                <li><a href="#portfolio" onClick={(e) => { e.preventDefault(); handleNavigate('home', 'portfolio'); }}><span className="fn-arrow">→</span> Our Projects</a></li>
+                <li><a href="#services" onClick={(e) => { e.preventDefault(); handleNavigate('home', 'services'); }}><span className="fn-arrow">→</span> Services</a></li>
+                <li><a href="#services" onClick={(e) => { e.preventDefault(); handleNavigate('home', 'services'); }}><span className="fn-arrow">→</span> Our Process</a></li>
+                <li><a href="#services" onClick={(e) => { e.preventDefault(); handleNavigate('home', 'services'); }}><span className="fn-arrow">→</span> FAQ</a></li>
               </ul>
             </div>
 
             <div className="footer-nav-col">
               <h5 className="footer-col-heading">Client Services</h5>
               <ul className="footer-nav-list">
-                <li><a href="#services"><span className="fn-arrow">→</span> Design Consult</a></li>
-                <li><a href="#contacts"><span className="fn-arrow">→</span> Contact Us</a></li>
-                <li><a href="#contacts"><span className="fn-arrow">→</span> Get a Quote</a></li>
-                <li><a href="#home"><span className="fn-arrow">→</span> Privacy Policy</a></li>
-                <li><a href="#home"><span className="fn-arrow">→</span> Terms &amp; Conditions</a></li>
+                <li><a href="#contacts" onClick={(e) => { e.preventDefault(); handleNavigate('contacts'); }}><span className="fn-arrow">→</span> Design Consult</a></li>
+                <li><a href="#contacts" onClick={(e) => { e.preventDefault(); handleNavigate('contacts'); }}><span className="fn-arrow">→</span> Contact Us</a></li>
+                <li><a href="#contacts" onClick={(e) => { e.preventDefault(); handleNavigate('contacts'); }}><span className="fn-arrow">→</span> Get a Quote</a></li>
+                <li><a href="#home" onClick={(e) => { e.preventDefault(); handleNavigate('home'); }}><span className="fn-arrow">→</span> Privacy Policy</a></li>
+                <li><a href="#home" onClick={(e) => { e.preventDefault(); handleNavigate('home'); }}><span className="fn-arrow">→</span> Terms &amp; Conditions</a></li>
               </ul>
             </div>
 
             <div className="footer-nav-col">
               <h5 className="footer-col-heading">Follow Our Work</h5>
-              <div className="footer-social-pills">
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="footer-social-pill">
-                  Instagram
+              <div className="footer-social-icons-row">
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon-circle" title="Instagram">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
                 </a>
-                <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className="footer-social-pill">
-                  Pinterest
+                <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon-circle" title="Pinterest">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.08 3.16 9.42 7.63 11.17-.11-.95-.2-2.41.04-3.45.22-.94 1.42-6.02 1.42-6.02s-.36-.72-.36-1.78c0-1.67.97-2.92 2.17-2.92 1.02 0 1.52.77 1.52 1.69 0 1.03-.66 2.57-1 3.99-.28 1.19.6 2.16 1.77 2.16 2.13 0 3.77-2.25 3.77-5.49 0-2.87-2.06-4.88-5.01-4.88-3.41 0-5.42 2.56-5.42 5.2 0 1.03.4 2.13.9 2.74.1.12.11.23.08.35-.09.38-.3.1.22-.34 1.39-.06.23-.2.31-.44.22-1.66-.77-2.7-3.21-2.7-5.17 0-4.2 3.06-8.07 8.81-8.07 4.63 0 8.23 3.3 8.23 7.71 0 4.6-2.9 8.3-6.93 8.3-1.35 0-2.62-.7-3.06-1.54l-.83 3.17c-.3 1.16-1.12 2.61-1.67 3.49C9.7 23.82 10.83 24 12 24c6.63 0 12-5.37 12-12S18.63 0 12 0z"/>
+                  </svg>
                 </a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="footer-social-pill">
-                  LinkedIn
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon-circle" title="LinkedIn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                  </svg>
                 </a>
               </div>
 
               <div className="footer-review-box">
                 <div className="footer-review-top">
                   <div className="footer-review-stars">
-                    {[...Array(5)].map((_, i) => <Star key={i} size={13} fill="#C5A467" color="#C5A467" />)}
+                    {[...Array(5)].map((_, i) => <Star key={i} size={13} fill="#D39858" color="#D39858" />)}
                   </div>
                   <span className="footer-review-score">4.9</span>
                 </div>
